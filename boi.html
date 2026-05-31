@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Olly's Birthday Dinner Invitation</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #050505;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #1a0000 0%, #000000 100%);
+            border: 2px solid #ff4d4d;
+            box-shadow: 0 0 20px rgba(255, 77, 77, 0.3);
+            border-radius: 15px;
+            width: 90%;
+            max-width: 450px;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .step {
+            display: none;
+        }
+
+        .step.active {
+            display: block;
+        }
+
+        h1 {
+            color: #ff4d4d;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255, 77, 77, 0.5);
+        }
+
+        p {
+            font-size: 1.2rem;
+            margin: 15px 0;
+            color: #cccccc;
+        }
+
+        .venue {
+            font-weight: bold;
+            color: #ff4d4d;
+            font-size: 1.4rem;
+            margin-top: 25px;
+            opacity: 0;
+            animation: fadeIn 1.5s ease-in forwards;
+            animation-delay: 2s; 
+        }
+
+        input[type="text"] {
+            width: 80%;
+            padding: 12px;
+            margin: 20px 0;
+            border: 2px solid #ff4d4d;
+            border-radius: 25px;
+            background-color: #111;
+            color: white;
+            font-size: 1rem;
+            text-align: center;
+            outline: none;
+        }
+
+        input[type="text"]:focus {
+            box-shadow: 0 0 10px #ff4d4d;
+        }
+
+        button {
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(255, 77, 77, 0.4);
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #e60000;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255, 77, 77, 0.6);
+        }
+
+        .error-msg {
+            color: #ff3333;
+            font-weight: bold;
+            margin-top: 15px;
+            font-size: 1.3rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .seat-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+            max-height: 220px;
+            overflow-y: auto;
+            padding: 5px;
+        }
+
+        .seat {
+            background-color: #222;
+            border: 1px solid #ff4d4d;
+            color: white;
+            padding: 12px 0;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-weight: bold;
+        }
+
+        .seat:hover {
+            background-color: #ff4d4d;
+        }
+
+        .balloon {
+            position: absolute;
+            width: 30px;
+            height: 40px;
+            border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+            bottom: -100px;
+            cursor: pointer;
+            animation: floatUp 4s ease-in forwards;
+        }
+
+        .balloon::after {
+            content: "";
+            position: absolute;
+            bottom: -8px;
+            left: 12px;
+            border-left: 3px solid transparent;
+            border-right: 3px solid transparent;
+            border-top: 8px solid inherit;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-120vh) rotate(20deg); opacity: 0; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="balloon-container"></div>
+
+    <div class="card">
+        
+        <div id="step1" class="step active">
+            <h1>Welcome!</h1>
+            <p>You are warmly invited to</p>
+            <p style="font-size: 1.5rem; color: #fff; font-weight: bold;">Olly’s Birthday Dinner</p>
+            <div class="venue">Venue: Kyanja Mall</div>
+            <button style="margin-top: 30px;" onclick="nextStep(2)">Continue</button>
+        </div>
+
+        <div id="step2" class="step">
+            <h1>Guest Verification</h1>
+            <p>Please enter your name to unlock your invitation:</p>
+            <input type="text" id="guestName" placeholder="Type your name here...">
+            <br>
+            <button onclick="verifyName()">Continue</button>
+            <div id="errorBox" class="error-msg"></div>
+        </div>
+
+        <div id="step3" class="step">
+            <h1>Choose Your Seat</h1>
+            <p>Pick a seat number from 1 to 25:</p>
+            <div class="seat-grid" id="seatGrid"></div>
+        </div>
+
+        <div id="step4" class="step">
+            <h1 style="color: #00ff66; text-shadow: 0 0 10px rgba(0,255,102,0.5);">Seat Booked!</h1>
+            <p id="successMessage" style="margin: 20px 0; font-size: 1.3rem;"></p>
+            <h2 style="color: #ff4d4d; margin-top: 25px;">Olly will be happy to see u! 🎉</h2>
+        </div>
+
+    </div>
+
+    <script>
+        // STRICT LIST OF INVITED GUESTS
+        const invitedList = ["kimmy", "shan", "blessie", "olly"];
+
+        window.onload = function() {
+            createBalloons();
+        };
+
+        function createBalloons() {
+            const container = document.getElementById('balloon-container');
+            const colors = ['#ff4d4d', '#cc0000', '#990000', '#ff1a1a'];
+            for (let i = 0; i < 20; i++) {
+                const balloon = document.createElement('div');
+                balloon.className = 'balloon';
+                balloon.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                balloon.style.left = Math.random() * 100 + 'vw';
+                balloon.style.animationDelay = Math.random() * 2 + 's';
+                balloon.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                balloon.addEventListener('click', () => balloon.remove());
+                container.appendChild(balloon);
+            }
+        }
+
+        function nextStep(stepNumber) {
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById(`step${stepNumber}`).classList.add('active');
+            if (stepNumber === 3) generateSeats();
+        }
+
+        // --- VERIFICATION SYSTEM ---
+        function verifyName() {
+            const inputField = document.getElementById('guestName');
+            const errorBox = document.getElementById('errorBox');
+            
+            // Clean up text: remove blank spaces, make it lowercase
+            const typedName = inputField.value.trim().toLowerCase();
+
+            // Check if the typed name exists in our invited list array
+            if (invitedList.includes(typedName)) {
+                errorBox.textContent = ""; // Clear errors
+                nextStep(3);               // Move directly to seat picking screen
+            } else {
+                errorBox.textContent = "wasn't invited"; // Block progress and display message
+            }
+        }
+
+        function generateSeats() {
+            const grid = document.getElementById('seatGrid');
+            grid.innerHTML = ''; 
+            for (let i = 1; i <= 25; i++) {
+                const seat = document.createElement('button');
+                seat.className = 'seat';
+                seat.textContent = i;
+                seat.onclick = () => selectSeat(i);
+                grid.appendChild(seat);
+            }
+        }
+
+        function selectSeat(seatNumber) {
+            const rawName = document.getElementById('guestName').value;
+            const formattedName = rawName.trim().charAt(0).toUpperCase() + rawName.trim().slice(1);
+            document.getElementById('successMessage').innerHTML = `Hi <strong>${formattedName}</strong>!<br>Seat <strong>#${seatNumber}</strong> is now booked.`;
+            nextStep(4);
+        }
+    </script>
+</body>
+</html>
